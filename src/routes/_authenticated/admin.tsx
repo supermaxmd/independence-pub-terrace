@@ -476,7 +476,7 @@ function CategoryDialog({
   value: Partial<Category>;
   onClose: () => void;
   onSaved: () => void;
-  onDelete?: () => void;
+  onDelete?: (() => void) | undefined;
 }) {
   const [form, setForm] = useState(value);
   const [saving, setSaving] = useState(false);
