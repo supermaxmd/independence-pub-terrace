@@ -56,7 +56,7 @@ function ItemRow({ item, lang }: { item: MenuItem; lang: Lang }) {
 
   return (
     <li
-      className={`flex gap-4 border-b border-border/60 py-4 last:border-b-0 ${
+      className={`flex gap-3 border-b border-border/60 py-3.5 last:border-b-0 sm:gap-4 sm:py-4 ${
         item.is_available ? "" : "opacity-50"
       }`}
     >
@@ -67,12 +67,12 @@ function ItemRow({ item, lang }: { item: MenuItem; lang: Lang }) {
           loading="lazy"
           width={88}
           height={88}
-          className="h-[88px] w-[88px] shrink-0 rounded-md border border-border object-cover"
+          className="h-16 w-16 shrink-0 rounded-md border border-border object-cover sm:h-[88px] sm:w-[88px]"
         />
       ) : null}
       <div className="min-w-0 flex-1">
         <div className="flex items-baseline justify-between gap-3">
-          <h3 className="text-lg leading-tight text-foreground">{name}</h3>
+          <h3 className="min-w-0 text-base leading-tight text-foreground sm:text-lg">{name}</h3>
           {item.variants.length === 1 && !item.variants[0]!.label_ru && !item.variants[0]!.label_ro ? (
             <span className="shrink-0 text-sm font-semibold text-primary">
               {formatPrice(item.variants[0]!.price, lang)}
