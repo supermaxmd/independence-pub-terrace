@@ -118,6 +118,7 @@ function AdminPage() {
   const [editingItem, setEditingItem] = useState<Partial<Item> | null>(null);
   const [editingSub, setEditingSub] = useState<Partial<Subcategory> | null>(null);
   const [editingCategory, setEditingCategory] = useState<Partial<Category> | null>(null);
+  const [qrOpen, setQrOpen] = useState(false);
 
   const roleQuery = useQuery({
     queryKey: ["is-admin"],
