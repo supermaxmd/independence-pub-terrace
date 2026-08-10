@@ -3,8 +3,8 @@ import { useMemo, useState } from "react";
 import { Search, Lock } from "lucide-react";
 
 import { getMenu, type MenuCategory, type MenuItem } from "@/lib/menu.functions";
+import { getSiteSettings, type SiteSettings } from "@/lib/site.functions";
 import { useLang, pick, formatPrice, type Lang } from "@/lib/i18n";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import heroImage from "@/assets/pub-hero.jpg";
 
@@ -24,7 +24,10 @@ export const Route = createFileRoute("/")({
       },
     ],
   }),
-  loader: () => getMenu(),
+  loader: async () => {
+    const [categories, settings] = await Promise.all([getMenu(), getSiteSettings()]);
+    return { categories, settings };
+  },
   component: MenuPage,
   errorComponent: () => (
     <div className="flex min-h-screen items-center justify-center p-6 text-muted-foreground">
