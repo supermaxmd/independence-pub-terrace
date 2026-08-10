@@ -65,7 +65,7 @@ function ItemRow({ item, lang }: { item: MenuItem; lang: Lang }) {
           loading="lazy"
           width={88}
           height={88}
-          className="h-22 w-22 shrink-0 rounded-md border border-border object-cover"
+          className="h-[88px] w-[88px] shrink-0 rounded-md border border-border object-cover"
         />
       ) : null}
       <div className="min-w-0 flex-1">
