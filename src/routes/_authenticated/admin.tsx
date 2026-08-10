@@ -130,7 +130,7 @@ function AdminPage() {
         .eq("role", "admin")
         .maybeSingle();
       if (data) return true;
-      const { data: claimed } = await supabase.rpc("claim_first_admin");
+      const claimed = await claimFirstAdmin();
       return claimed === true;
     },
   });
