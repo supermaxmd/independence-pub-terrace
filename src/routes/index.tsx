@@ -157,7 +157,10 @@ function CategorySection({
 }
 
 function MenuPage() {
-  const categories: MenuCategory[] = Route.useLoaderData();
+  const { categories, settings } = Route.useLoaderData() as {
+    categories: MenuCategory[];
+    settings: SiteSettings;
+  };
   const { lang, setLang, t } = useLang();
   const [query, setQuery] = useState("");
 
@@ -166,23 +169,41 @@ function MenuPage() {
     [categories, query],
   );
 
-  return (
-    <main className="min-h-screen bg-background">
-      <header className="relative isolate overflow-hidden">
-        <img
-          src={heroImage}
-          alt="Зал паба Independence Pub"
-          width={1920}
-          height={1080}
-          className="absolute inset-0 -z-10 h-full w-full object-cover opacity-45"
-        />
-        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-background/70 via-background/80 to-background" />
-        <div className="mx-auto flex max-w-3xl flex-col items-center px-5 py-20 text-center sm:py-28">
-          <span className="text-xs uppercase tracking-[0.45em] text-primary">Chișinău</span>
-          <h1 className="text-display mt-3 text-6xl text-foreground sm:text-8xl">Independence Pub</h1>
-          <p className="mt-3 text-sm text-muted-foreground">{t("tagline")}</p>
+  const fontVars = {
+    "--font-display": `"${settings.font_display}", sans-serif`,
+    "--font-sans": `"${settings.font_body}", ui-sans-serif, system-ui, sans-serif`,
+    fontFamily: `"${settings.font_body}", ui-sans-serif, system-ui, sans-serif`,
+  } as React.CSSProperties;
 
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
+  const footerText = pick(lang, settings.footer_ru, settings.footer_ro);
+
+  return (
+    <main className="min-h-screen bg-background" style={fontVars}>
+      <header className="relative isolate overflow-hidden">
+        {settings.show_hero_image ? (
+          <>
+            <img
+              src={heroImage}
+              alt={settings.brand_title}
+              width={1920}
+              height={1080}
+              className="absolute inset-0 -z-10 h-full w-full object-cover opacity-45"
+            />
+            <div className="absolute inset-0 -z-10 bg-gradient-to-b from-background/70 via-background/80 to-background" />
+          </>
+        ) : null}
+        <div className="mx-auto flex max-w-3xl flex-col items-center px-4 py-14 text-center sm:px-5 sm:py-28">
+          <span className="text-[10px] uppercase tracking-[0.35em] text-primary sm:text-xs sm:tracking-[0.45em]">
+            {pick(lang, settings.kicker_ru, settings.kicker_ro)}
+          </span>
+          <h1 className="text-display mt-3 text-4xl leading-[1.05] text-foreground min-[420px]:text-5xl sm:text-8xl">
+            {settings.brand_title}
+          </h1>
+          <p className="mt-3 text-xs text-muted-foreground sm:text-sm">
+            {pick(lang, settings.tagline_ru, settings.tagline_ro) || t("tagline")}
+          </p>
+
+          <div className="mt-7 flex flex-wrap items-center justify-center gap-2">
             <div className="flex overflow-hidden rounded-md border border-border">
               {(["ru", "ro"] as const).map((l) => (
                 <button
@@ -203,7 +224,7 @@ function MenuPage() {
       </header>
 
       <nav className="sticky top-0 z-20 border-y border-border bg-background/95 backdrop-blur">
-        <div className="mx-auto flex max-w-3xl gap-2 overflow-x-auto px-5 py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="mx-auto flex max-w-3xl gap-2 overflow-x-auto px-4 py-2.5 sm:px-5 sm:py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {categories.map((c) => (
             <a
               key={c.id}
@@ -216,16 +237,18 @@ function MenuPage() {
         </div>
       </nav>
 
-      <div className="mx-auto max-w-3xl px-5">
-        <div className="relative mt-8">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder={t("search")}
-            className="pl-9"
-          />
-        </div>
+      <div className="mx-auto max-w-3xl px-4 sm:px-5">
+        {settings.show_search ? (
+          <div className="relative mt-6 sm:mt-8">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder={t("search")}
+              className="pl-9"
+            />
+          </div>
+        ) : null}
 
         {visible.length === 0 ? (
           <p className="py-16 text-center text-muted-foreground">{t("nothingFound")}</p>
@@ -236,16 +259,18 @@ function MenuPage() {
         )}
       </div>
 
-      <footer className="mt-10 border-t border-border py-10">
-        <div className="mx-auto flex max-w-3xl items-center justify-between px-5 text-xs text-muted-foreground">
-          <span>© {new Date().getFullYear()} Independence Pub</span>
-          <Link to="/admin" className="inline-flex items-center gap-1.5 hover:text-primary">
+      <footer className="mt-10 border-t border-border py-8">
+        <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-2 px-4 text-xs text-muted-foreground sm:px-5">
+          <span className="min-w-0">
+            © {new Date().getFullYear()} {settings.brand_title}
+            {footerText ? ` · ${footerText}` : ""}
+          </span>
+          <Link to="/admin" className="inline-flex shrink-0 items-center gap-1.5 hover:text-primary">
             <Lock className="h-3 w-3" />
             {t("admin")}
           </Link>
         </div>
       </footer>
-
     </main>
   );
 }
