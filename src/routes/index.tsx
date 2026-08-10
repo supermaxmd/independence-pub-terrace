@@ -1,12 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { QrCode, Search, Lock } from "lucide-react";
+import { Search, Lock } from "lucide-react";
 
 import { getMenu, type MenuCategory, type MenuItem } from "@/lib/menu.functions";
 import { useLang, pick, formatPrice, type Lang } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { QrDialog } from "@/components/QrDialog";
 import heroImage from "@/assets/pub-hero.jpg";
 
 export const Route = createFileRoute("/")({
@@ -158,7 +157,6 @@ function MenuPage() {
   const categories: MenuCategory[] = Route.useLoaderData();
   const { lang, setLang, t } = useLang();
   const [query, setQuery] = useState("");
-  const [qrOpen, setQrOpen] = useState(false);
 
   const visible = useMemo(
     () => categories.filter((c) => !query || c.items.some((i) => matches(i, query))),
@@ -197,10 +195,6 @@ function MenuPage() {
                 </button>
               ))}
             </div>
-            <Button variant="outline" onClick={() => setQrOpen(true)}>
-              <QrCode className="mr-2 h-4 w-4" />
-              {t("qr")}
-            </Button>
           </div>
         </div>
       </header>
@@ -249,7 +243,6 @@ function MenuPage() {
         </div>
       </footer>
 
-      <QrDialog open={qrOpen} onOpenChange={setQrOpen} />
     </main>
   );
 }

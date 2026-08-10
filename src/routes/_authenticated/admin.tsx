@@ -2,10 +2,11 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { ArrowLeft, GripVertical, Loader2, Pencil, Plus, Trash2, Upload } from "lucide-react";
+import { ArrowLeft, GripVertical, Loader2, Pencil, Plus, QrCode, Trash2, Upload } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
 import { claimFirstAdmin } from "@/lib/admin.functions";
+import { QrPrintDialog } from "@/components/QrPrintDialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -117,6 +118,7 @@ function AdminPage() {
   const [editingItem, setEditingItem] = useState<Partial<Item> | null>(null);
   const [editingSub, setEditingSub] = useState<Partial<Subcategory> | null>(null);
   const [editingCategory, setEditingCategory] = useState<Partial<Category> | null>(null);
+  const [qrOpen, setQrOpen] = useState(false);
 
   const roleQuery = useQuery({
     queryKey: ["is-admin"],
@@ -236,6 +238,7 @@ function AdminPage() {
 
   return (
     <main className="min-h-screen bg-background pb-20">
+      <QrPrintDialog open={qrOpen} onOpenChange={setQrOpen} />
       <header className="border-b border-border">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-4">
           <div>
@@ -243,6 +246,10 @@ function AdminPage() {
             <p className="text-xs text-muted-foreground">Independence Pub · меню</p>
           </div>
           <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={() => setQrOpen(true)}>
+              <QrCode className="mr-1.5 h-4 w-4" />
+              QR-код
+            </Button>
             <Button variant="ghost" size="sm" asChild>
               <Link to="/">
                 <ArrowLeft className="mr-1.5 h-4 w-4" />
