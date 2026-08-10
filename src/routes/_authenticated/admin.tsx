@@ -243,6 +243,10 @@ function AdminPage() {
             <p className="text-xs text-muted-foreground">Independence Pub · меню</p>
           </div>
           <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={() => setQrOpen(true)}>
+              <QrCode className="mr-1.5 h-4 w-4" />
+              QR-код
+            </Button>
             <Button variant="ghost" size="sm" asChild>
               <Link to="/">
                 <ArrowLeft className="mr-1.5 h-4 w-4" />
