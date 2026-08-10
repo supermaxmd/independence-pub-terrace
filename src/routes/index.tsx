@@ -155,7 +155,7 @@ function CategorySection({
 }
 
 function MenuPage() {
-  const categories = Route.useLoaderData();
+  const categories: MenuCategory[] = Route.useLoaderData();
   const { lang, setLang, t } = useLang();
   const [query, setQuery] = useState("");
   const [qrOpen, setQrOpen] = useState(false);
