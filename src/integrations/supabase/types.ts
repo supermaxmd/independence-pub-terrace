@@ -148,6 +148,60 @@ export type Database = {
           },
         ]
       }
+      site_settings: {
+        Row: {
+          brand_title: string
+          created_at: string
+          font_body: string
+          font_display: string
+          footer_ro: string
+          footer_ru: string
+          id: string
+          kicker_ro: string
+          kicker_ru: string
+          public_url: string
+          show_hero_image: boolean
+          show_search: boolean
+          tagline_ro: string
+          tagline_ru: string
+          updated_at: string
+        }
+        Insert: {
+          brand_title?: string
+          created_at?: string
+          font_body?: string
+          font_display?: string
+          footer_ro?: string
+          footer_ru?: string
+          id?: string
+          kicker_ro?: string
+          kicker_ru?: string
+          public_url?: string
+          show_hero_image?: boolean
+          show_search?: boolean
+          tagline_ro?: string
+          tagline_ru?: string
+          updated_at?: string
+        }
+        Update: {
+          brand_title?: string
+          created_at?: string
+          font_body?: string
+          font_display?: string
+          footer_ro?: string
+          footer_ru?: string
+          id?: string
+          kicker_ro?: string
+          kicker_ru?: string
+          public_url?: string
+          show_hero_image?: boolean
+          show_search?: boolean
+          tagline_ro?: string
+          tagline_ru?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       subcategories: {
         Row: {
           category_id: string

@@ -4,6 +4,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { supabase } from "@/integrations/supabase/client";
+import { DEFAULT_SETTINGS } from "@/lib/site.functions";
 
 export function QrPrintDialog({
   open,
@@ -17,7 +19,20 @@ export function QrPrintDialog({
 
   useEffect(() => {
     if (!open) return;
-    setUrl((prev) => prev || `${window.location.origin}/`);
+    let active = true;
+    // Публичный адрес меню (не превью админки), чтобы QR не просил вход.
+    supabase
+      .from("site_settings")
+      .select("public_url")
+      .eq("id", "default")
+      .maybeSingle()
+      .then(({ data }) => {
+        if (!active) return;
+        setUrl((prev) => prev || data?.public_url || DEFAULT_SETTINGS.public_url);
+      });
+    return () => {
+      active = false;
+    };
   }, [open]);
 
   useEffect(() => {
