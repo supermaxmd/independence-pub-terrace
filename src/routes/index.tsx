@@ -118,13 +118,14 @@ function CategorySection({
   );
 
   return (
-    <section id={category.slug} className="scroll-mt-28 py-10">
-      <div className="flex items-center gap-4">
-        <h2 className="text-display text-3xl text-primary sm:text-4xl">
+    <section id={category.slug} className="scroll-mt-20 py-7 sm:scroll-mt-28 sm:py-10">
+      <div className="flex items-center gap-3 sm:gap-4">
+        <h2 className="text-display min-w-0 text-2xl text-primary sm:text-4xl">
           {pick(lang, category.name_ru, category.name_ro)}
         </h2>
         <span className="rule-gold h-px flex-1" />
       </div>
+
 
       {items.length === 0 ? (
         <p className="mt-4 text-sm text-muted-foreground">
