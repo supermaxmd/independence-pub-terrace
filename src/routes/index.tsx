@@ -192,11 +192,44 @@ function MenuPage() {
   };
   const { lang, setLang, t } = useLang();
   const [query, setQuery] = useState("");
+  const [openCategories, setOpenCategories] = useState<Set<string>>(new Set());
 
   const visible = useMemo(
     () => categories.filter((c) => !query || c.items.some((i) => matches(i, query))),
     [categories, query],
   );
+
+  useEffect(() => {
+    const handleHash = () => {
+      const slug = window.location.hash.replace("#", "");
+      if (slug) {
+        setOpenCategories((prev) => {
+          if (prev.has(slug)) return prev;
+          const next = new Set(prev);
+          next.add(slug);
+          return next;
+        });
+      }
+    };
+    handleHash();
+    window.addEventListener("hashchange", handleHash);
+    return () => window.removeEventListener("hashchange", handleHash);
+  }, []);
+
+  useEffect(() => {
+    if (query) {
+      setOpenCategories(new Set(visible.map((c) => c.slug)));
+    }
+  }, [query, visible]);
+
+  const handleToggle = (slug: string, open: boolean) => {
+    setOpenCategories((prev) => {
+      const next = new Set(prev);
+      if (open) next.add(slug);
+      else next.delete(slug);
+      return next;
+    });
+  };
 
   const fontVars = {
     "--font-display": `"${settings.font_display}", sans-serif`,
@@ -266,9 +299,9 @@ function MenuPage() {
         </div>
       </nav>
 
-      <div className="mx-auto max-w-3xl px-4 sm:px-5">
+      <div className="mx-auto max-w-3xl space-y-4 px-4 py-6 sm:space-y-6 sm:px-5 sm:py-8">
         {settings.show_search ? (
-          <div className="relative mt-6 sm:mt-8">
+          <div className="relative">
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               value={query}
@@ -283,7 +316,14 @@ function MenuPage() {
           <p className="py-16 text-center text-muted-foreground">{t("nothingFound")}</p>
         ) : (
           visible.map((c) => (
-            <CategorySection key={c.id} category={c} lang={lang} query={query} />
+            <CategorySection
+              key={c.id}
+              category={c}
+              lang={lang}
+              query={query}
+              isOpen={openCategories.has(c.slug)}
+              onToggle={handleToggle}
+            />
           ))
         )}
       </div>
@@ -303,3 +343,4 @@ function MenuPage() {
     </main>
   );
 }
+
