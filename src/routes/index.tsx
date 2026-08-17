@@ -103,10 +103,14 @@ function CategorySection({
   category,
   lang,
   query,
+  isOpen,
+  onToggle,
 }: {
   category: MenuCategory;
   lang: Lang;
   query: string;
+  isOpen: boolean;
+  onToggle: (slug: string, open: boolean) => void;
 }) {
   const items = category.items.filter((i) => matches(i, query));
   if (query && items.length === 0) return null;
@@ -119,54 +123,67 @@ function CategorySection({
   );
 
   return (
-    <section id={category.slug} className="scroll-mt-20 py-7 sm:scroll-mt-28 sm:py-10">
-      <div className="flex items-center gap-3 sm:gap-4">
-        <h2 className="text-display min-w-0 text-2xl text-primary sm:text-4xl">
-          {pick(lang, category.name_ru, category.name_ro)}
-        </h2>
-        <span className="rule-gold h-px flex-1" />
-      </div>
+    <details
+      id={category.slug}
+      open={isOpen}
+      onToggle={(e) => onToggle(category.slug, e.currentTarget.open)}
+      className="group scroll-mt-20 rounded-lg border border-border/60 bg-card/20 sm:scroll-mt-28"
+    >
+      <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-4 sm:px-5 sm:py-5 [&::-webkit-details-marker]:hidden">
+        <div className="flex items-center gap-3 sm:gap-4">
+          <h2 className="text-display min-w-0 text-2xl text-primary sm:text-4xl">
+            {pick(lang, category.name_ru, category.name_ro)}
+          </h2>
+          <span className="rule-gold h-px w-12 sm:w-20" />
+        </div>
+        <span className="flex shrink-0 items-center gap-2 text-sm text-muted-foreground">
+          {items.length}
+          <ChevronDown className="h-5 w-5 transition-transform group-open:rotate-180" />
+        </span>
+      </summary>
 
+      <div className="px-4 pb-5 sm:px-5 sm:pb-6">
+        {items.length === 0 ? (
+          <p className="mt-2 text-sm text-muted-foreground">
+            {lang === "ru" ? "В этом разделе пока пусто" : "Această secțiune este goală"}
+          </p>
+        ) : null}
 
-      {items.length === 0 ? (
-        <p className="mt-4 text-sm text-muted-foreground">
-          {lang === "ru" ? "В этом разделе пока пусто" : "Această secțiune este goală"}
-        </p>
-      ) : null}
-
-      {ungrouped.length > 0 ? (
-        <ul className="mt-4">
-          {ungrouped.map((i) => (
-            <ItemRow key={i.id} item={i} lang={lang} />
-          ))}
-        </ul>
-      ) : null}
-
-      {grouped.map((g) => (
-        <details
-          key={g.sub.id}
-          open={!!query}
-          className="group mt-3 rounded-md border border-border/60 bg-card/30"
-        >
-          <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-3 py-3 [&::-webkit-details-marker]:hidden">
-            <span className="min-w-0 truncate text-sm font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-              {pick(lang, g.sub.name_ru, g.sub.name_ro)}
-            </span>
-            <span className="flex shrink-0 items-center gap-2 text-xs text-muted-foreground">
-              {g.items.length}
-              <ChevronDown className="h-4 w-4 transition-transform group-open:rotate-180" />
-            </span>
-          </summary>
-          <ul className="px-3 pb-2">
-            {g.items.map((i) => (
+        {ungrouped.length > 0 ? (
+          <ul className="mt-2">
+            {ungrouped.map((i) => (
               <ItemRow key={i.id} item={i} lang={lang} />
             ))}
           </ul>
-        </details>
-      ))}
-    </section>
+        ) : null}
+
+        {grouped.map((g) => (
+          <details
+            key={g.sub.id}
+            open={!!query}
+            className="group/sub mt-3 rounded-md border border-border/60 bg-card/30"
+          >
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-3 py-3 [&::-webkit-details-marker]:hidden">
+              <span className="min-w-0 truncate text-sm font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                {pick(lang, g.sub.name_ru, g.sub.name_ro)}
+              </span>
+              <span className="flex shrink-0 items-center gap-2 text-xs text-muted-foreground">
+                {g.items.length}
+                <ChevronDown className="h-4 w-4 transition-transform group-open/sub:rotate-180" />
+              </span>
+            </summary>
+            <ul className="px-3 pb-2">
+              {g.items.map((i) => (
+                <ItemRow key={i.id} item={i} lang={lang} />
+              ))}
+            </ul>
+          </details>
+        ))}
+      </div>
+    </details>
   );
 }
+
 
 function MenuPage() {
   const { categories, settings } = Route.useLoaderData() as {
