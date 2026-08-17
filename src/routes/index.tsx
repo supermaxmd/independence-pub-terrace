@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Search, Lock, ChevronDown } from "lucide-react";
+
 
 import { getMenu, type MenuCategory, type MenuItem } from "@/lib/menu.functions";
 import { getSiteSettings, type SiteSettings } from "@/lib/site.functions";
