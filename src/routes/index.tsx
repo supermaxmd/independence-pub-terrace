@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Search, Lock } from "lucide-react";
+import { Search, Lock, ChevronDown } from "lucide-react";
 
 import { getMenu, type MenuCategory, type MenuItem } from "@/lib/menu.functions";
 import { getSiteSettings, type SiteSettings } from "@/lib/site.functions";
@@ -67,7 +67,7 @@ function ItemRow({ item, lang }: { item: MenuItem; lang: Lang }) {
           loading="lazy"
           width={88}
           height={88}
-          className="h-16 w-16 shrink-0 rounded-md border border-border object-cover sm:h-[88px] sm:w-[88px]"
+          className="h-16 w-16 shrink-0 rounded-md object-contain sm:h-[88px] sm:w-[88px]"
         />
       ) : null}
       <div className="min-w-0 flex-1">
@@ -142,16 +142,26 @@ function CategorySection({
       ) : null}
 
       {grouped.map((g) => (
-        <div key={g.sub.id} className="mt-6">
-          <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-            {pick(lang, g.sub.name_ru, g.sub.name_ro)}
-          </h3>
-          <ul className="mt-2">
+        <details
+          key={g.sub.id}
+          open={!!query}
+          className="group mt-3 rounded-md border border-border/60 bg-card/30"
+        >
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-3 py-3 [&::-webkit-details-marker]:hidden">
+            <span className="min-w-0 truncate text-sm font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+              {pick(lang, g.sub.name_ru, g.sub.name_ro)}
+            </span>
+            <span className="flex shrink-0 items-center gap-2 text-xs text-muted-foreground">
+              {g.items.length}
+              <ChevronDown className="h-4 w-4 transition-transform group-open:rotate-180" />
+            </span>
+          </summary>
+          <ul className="px-3 pb-2">
             {g.items.map((i) => (
               <ItemRow key={i.id} item={i} lang={lang} />
             ))}
           </ul>
-        </div>
+        </details>
       ))}
     </section>
   );
@@ -225,12 +235,12 @@ function MenuPage() {
       </header>
 
       <nav className="sticky top-0 z-20 border-y border-border bg-background/95 backdrop-blur">
-        <div className="mx-auto flex max-w-3xl gap-2 overflow-x-auto px-4 py-2.5 sm:px-5 sm:py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="mx-auto flex max-w-3xl flex-wrap justify-center gap-1.5 px-3 py-2 sm:gap-2 sm:px-5 sm:py-3">
           {categories.map((c) => (
             <a
               key={c.id}
               href={`#${c.slug}`}
-              className="shrink-0 rounded-full border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+              className="rounded-full border border-border px-2.5 py-1 text-[11px] font-medium leading-tight text-muted-foreground transition-colors hover:border-primary hover:text-primary sm:px-3 sm:py-1.5 sm:text-xs"
             >
               {pick(lang, c.name_ru, c.name_ro)}
             </a>
