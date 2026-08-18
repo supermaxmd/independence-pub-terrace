@@ -291,6 +291,14 @@ function MenuPage() {
             <a
               key={c.id}
               href={`#${c.slug}`}
+              onClick={() => {
+                setOpenCategories((prev) => {
+                  if (prev.has(c.slug)) return prev;
+                  const next = new Set(prev);
+                  next.add(c.slug);
+                  return next;
+                });
+              }}
               className="rounded-full border border-border px-2.5 py-1 text-[11px] font-medium leading-tight text-muted-foreground transition-colors hover:border-primary hover:text-primary sm:px-3 sm:py-1.5 sm:text-xs"
             >
               {pick(lang, c.name_ru, c.name_ro)}
