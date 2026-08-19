@@ -242,6 +242,8 @@ function AdminPage() {
     <main className="min-h-screen bg-background pb-20">
       <QrPrintDialog open={qrOpen} onOpenChange={setQrOpen} />
       <DesignDialog open={designOpen} onOpenChange={setDesignOpen} />
+      <UsersDialog open={usersOpen} onOpenChange={setUsersOpen} />
+
       <header className="border-b border-border">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-4 sm:px-5">
           <div className="min-w-0">
