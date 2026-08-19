@@ -33,7 +33,6 @@ function AuthPage() {
   const { t } = useLang();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -51,25 +50,16 @@ function AuthPage() {
     }
     setLoading(true);
     try {
-      if (mode === "signin") {
-        const { error } = await supabase.auth.signInWithPassword(parsed.data);
-        if (error) throw error;
-        navigate({ to: "/admin", replace: true });
-      } else {
-        const { data, error } = await supabase.auth.signUp({
-          ...parsed.data,
-          options: { emailRedirectTo: `${window.location.origin}/admin` },
-        });
-        if (error) throw error;
-        if (data.session) navigate({ to: "/admin", replace: true });
-        else toast.success("Проверьте почту и подтвердите адрес / Verificați e-mailul");
-      }
+      const { error } = await supabase.auth.signInWithPassword(parsed.data);
+      if (error) throw error;
+      navigate({ to: "/admin", replace: true });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Ошибка входа");
     } finally {
       setLoading(false);
     }
   };
+
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-background px-5">
