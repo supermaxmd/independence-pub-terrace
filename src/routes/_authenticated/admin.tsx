@@ -2,12 +2,14 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { ArrowLeft, GripVertical, Loader2, Palette, Pencil, Plus, QrCode, Trash2, Upload } from "lucide-react";
+import { ArrowLeft, GripVertical, Loader2, Palette, Pencil, Plus, QrCode, Trash2, Upload, Users } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
-import { claimFirstAdmin } from "@/lib/admin.functions";
+import { useServerFn } from "@tanstack/react-start";
+import { claimFirstAdmin, getIsAdmin } from "@/lib/admin.functions";
 import { QrPrintDialog } from "@/components/QrPrintDialog";
 import { DesignDialog } from "@/components/DesignDialog";
+import { UsersDialog } from "@/components/UsersDialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -121,23 +123,19 @@ function AdminPage() {
   const [editingCategory, setEditingCategory] = useState<Partial<Category> | null>(null);
   const [qrOpen, setQrOpen] = useState(false);
   const [designOpen, setDesignOpen] = useState(false);
+  const [usersOpen, setUsersOpen] = useState(false);
 
+  const checkIsAdmin = useServerFn(getIsAdmin);
   const roleQuery = useQuery({
     queryKey: ["is-admin"],
     queryFn: async () => {
-      const { data: userData } = await supabase.auth.getUser();
-      if (!userData.user) return false;
-      const { data } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", userData.user.id)
-        .eq("role", "admin")
-        .maybeSingle();
-      if (data) return true;
+      const isAdmin = await checkIsAdmin();
+      if (isAdmin) return true;
       const claimed = await claimFirstAdmin();
       return claimed === true;
     },
   });
+
 
   const categoriesQuery = useQuery({
     queryKey: ["admin-categories"],
@@ -242,6 +240,8 @@ function AdminPage() {
     <main className="min-h-screen bg-background pb-20">
       <QrPrintDialog open={qrOpen} onOpenChange={setQrOpen} />
       <DesignDialog open={designOpen} onOpenChange={setDesignOpen} />
+      <UsersDialog open={usersOpen} onOpenChange={setUsersOpen} />
+
       <header className="border-b border-border">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-4 sm:px-5">
           <div className="min-w-0">
@@ -252,6 +252,10 @@ function AdminPage() {
             <Button variant="outline" size="sm" onClick={() => setDesignOpen(true)}>
               <Palette className="mr-1.5 h-4 w-4" />
               Оформление
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => setUsersOpen(true)}>
+              <Users className="mr-1.5 h-4 w-4" />
+              Пользователи
             </Button>
             <Button variant="outline" size="sm" onClick={() => setQrOpen(true)}>
               <QrCode className="mr-1.5 h-4 w-4" />
