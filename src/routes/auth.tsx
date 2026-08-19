@@ -87,24 +87,21 @@ function AuthPage() {
             <Input
               id="password"
               type="password"
-              autoComplete={mode === "signin" ? "current-password" : "new-password"}
+              autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
           </div>
           <Button type="submit" className="w-full" disabled={loading}>
-            {mode === "signin" ? t("signIn") : "Создать аккаунт"}
+            {t("signIn")}
           </Button>
         </form>
 
-        <button
-          type="button"
-          onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
-          className="mt-4 w-full text-center text-xs text-muted-foreground hover:text-primary"
-        >
-          {mode === "signin" ? "Создать аккаунт администратора" : "У меня уже есть аккаунт"}
-        </button>
+        <p className="mt-4 text-center text-xs text-muted-foreground">
+          Доступ только для сотрудников / Acces doar pentru personal
+        </p>
+
       </div>
     </main>
   );
