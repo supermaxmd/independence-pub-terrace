@@ -33,7 +33,6 @@ function AuthPage() {
   const { t } = useLang();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -51,25 +50,16 @@ function AuthPage() {
     }
     setLoading(true);
     try {
-      if (mode === "signin") {
-        const { error } = await supabase.auth.signInWithPassword(parsed.data);
-        if (error) throw error;
-        navigate({ to: "/admin", replace: true });
-      } else {
-        const { data, error } = await supabase.auth.signUp({
-          ...parsed.data,
-          options: { emailRedirectTo: `${window.location.origin}/admin` },
-        });
-        if (error) throw error;
-        if (data.session) navigate({ to: "/admin", replace: true });
-        else toast.success("Проверьте почту и подтвердите адрес / Verificați e-mailul");
-      }
+      const { error } = await supabase.auth.signInWithPassword(parsed.data);
+      if (error) throw error;
+      navigate({ to: "/admin", replace: true });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Ошибка входа");
     } finally {
       setLoading(false);
     }
   };
+
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-background px-5">
@@ -97,24 +87,21 @@ function AuthPage() {
             <Input
               id="password"
               type="password"
-              autoComplete={mode === "signin" ? "current-password" : "new-password"}
+              autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
           </div>
           <Button type="submit" className="w-full" disabled={loading}>
-            {mode === "signin" ? t("signIn") : "Создать аккаунт"}
+            {t("signIn")}
           </Button>
         </form>
 
-        <button
-          type="button"
-          onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
-          className="mt-4 w-full text-center text-xs text-muted-foreground hover:text-primary"
-        >
-          {mode === "signin" ? "Создать аккаунт администратора" : "У меня уже есть аккаунт"}
-        </button>
+        <p className="mt-4 text-center text-xs text-muted-foreground">
+          Доступ только для сотрудников / Acces doar pentru personal
+        </p>
+
       </div>
     </main>
   );
