@@ -124,22 +124,17 @@ function AdminPage() {
   const [designOpen, setDesignOpen] = useState(false);
   const [usersOpen, setUsersOpen] = useState(false);
 
+  const checkIsAdmin = useServerFn(getIsAdmin);
   const roleQuery = useQuery({
     queryKey: ["is-admin"],
     queryFn: async () => {
-      const { data: userData } = await supabase.auth.getUser();
-      if (!userData.user) return false;
-      const { data } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", userData.user.id)
-        .eq("role", "admin")
-        .maybeSingle();
-      if (data) return true;
+      const isAdmin = await checkIsAdmin();
+      if (isAdmin) return true;
       const claimed = await claimFirstAdmin();
       return claimed === true;
     },
   });
+
 
   const categoriesQuery = useQuery({
     queryKey: ["admin-categories"],
