@@ -5,7 +5,8 @@ import { toast } from "sonner";
 import { ArrowLeft, GripVertical, Loader2, Palette, Pencil, Plus, QrCode, Trash2, Upload, Users } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
-import { claimFirstAdmin } from "@/lib/admin.functions";
+import { useServerFn } from "@tanstack/react-start";
+import { claimFirstAdmin, getIsAdmin } from "@/lib/admin.functions";
 import { QrPrintDialog } from "@/components/QrPrintDialog";
 import { DesignDialog } from "@/components/DesignDialog";
 import { UsersDialog } from "@/components/UsersDialog";
