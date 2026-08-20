@@ -19,6 +19,7 @@ export type Database = {
           created_at: string
           id: string
           is_visible: boolean
+          name_en: string
           name_ro: string
           name_ru: string
           slug: string
@@ -29,6 +30,7 @@ export type Database = {
           created_at?: string
           id?: string
           is_visible?: boolean
+          name_en?: string
           name_ro: string
           name_ru: string
           slug: string
@@ -39,6 +41,7 @@ export type Database = {
           created_at?: string
           id?: string
           is_visible?: boolean
+          name_en?: string
           name_ro?: string
           name_ru?: string
           slug?: string
@@ -52,6 +55,7 @@ export type Database = {
           created_at: string
           id: string
           item_id: string
+          label_en: string
           label_ro: string
           label_ru: string
           price: number
@@ -62,6 +66,7 @@ export type Database = {
           created_at?: string
           id?: string
           item_id: string
+          label_en?: string
           label_ro?: string
           label_ru?: string
           price?: number
@@ -72,6 +77,7 @@ export type Database = {
           created_at?: string
           id?: string
           item_id?: string
+          label_en?: string
           label_ro?: string
           label_ru?: string
           price?: number
@@ -92,11 +98,13 @@ export type Database = {
         Row: {
           category_id: string
           created_at: string
+          description_en: string | null
           description_ro: string | null
           description_ru: string | null
           id: string
           image_url: string | null
           is_available: boolean
+          name_en: string
           name_ro: string
           name_ru: string
           sort_order: number
@@ -106,11 +114,13 @@ export type Database = {
         Insert: {
           category_id: string
           created_at?: string
+          description_en?: string | null
           description_ro?: string | null
           description_ru?: string | null
           id?: string
           image_url?: string | null
           is_available?: boolean
+          name_en?: string
           name_ro: string
           name_ru: string
           sort_order?: number
@@ -120,11 +130,13 @@ export type Database = {
         Update: {
           category_id?: string
           created_at?: string
+          description_en?: string | null
           description_ro?: string | null
           description_ru?: string | null
           id?: string
           image_url?: string | null
           is_available?: boolean
+          name_en?: string
           name_ro?: string
           name_ru?: string
           sort_order?: number
@@ -154,14 +166,17 @@ export type Database = {
           created_at: string
           font_body: string
           font_display: string
+          footer_en: string
           footer_ro: string
           footer_ru: string
           id: string
+          kicker_en: string
           kicker_ro: string
           kicker_ru: string
           public_url: string
           show_hero_image: boolean
           show_search: boolean
+          tagline_en: string
           tagline_ro: string
           tagline_ru: string
           updated_at: string
@@ -171,14 +186,17 @@ export type Database = {
           created_at?: string
           font_body?: string
           font_display?: string
+          footer_en?: string
           footer_ro?: string
           footer_ru?: string
           id?: string
+          kicker_en?: string
           kicker_ro?: string
           kicker_ru?: string
           public_url?: string
           show_hero_image?: boolean
           show_search?: boolean
+          tagline_en?: string
           tagline_ro?: string
           tagline_ru?: string
           updated_at?: string
@@ -188,14 +206,17 @@ export type Database = {
           created_at?: string
           font_body?: string
           font_display?: string
+          footer_en?: string
           footer_ro?: string
           footer_ru?: string
           id?: string
+          kicker_en?: string
           kicker_ro?: string
           kicker_ru?: string
           public_url?: string
           show_hero_image?: boolean
           show_search?: boolean
+          tagline_en?: string
           tagline_ro?: string
           tagline_ru?: string
           updated_at?: string
@@ -208,6 +229,7 @@ export type Database = {
           created_at: string
           id: string
           is_visible: boolean
+          name_en: string
           name_ro: string
           name_ru: string
           sort_order: number
@@ -218,6 +240,7 @@ export type Database = {
           created_at?: string
           id?: string
           is_visible?: boolean
+          name_en?: string
           name_ro: string
           name_ru: string
           sort_order?: number
@@ -228,6 +251,7 @@ export type Database = {
           created_at?: string
           id?: string
           is_visible?: boolean
+          name_en?: string
           name_ro?: string
           name_ru?: string
           sort_order?: number
