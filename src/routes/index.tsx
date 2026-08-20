@@ -44,7 +44,14 @@ export const Route = createFileRoute("/")({
 
 function matches(item: MenuItem, q: string) {
   if (!q) return true;
-  const hay = [item.name_ru, item.name_ro, item.description_ru, item.description_ro]
+  const hay = [
+    item.name_ru,
+    item.name_ro,
+    item.name_en,
+    item.description_ru,
+    item.description_ro,
+    item.description_en,
+  ]
     .filter(Boolean)
     .join(" ")
     .toLowerCase();
@@ -52,8 +59,8 @@ function matches(item: MenuItem, q: string) {
 }
 
 function ItemRow({ item, lang }: { item: MenuItem; lang: Lang }) {
-  const name = pick(lang, item.name_ru, item.name_ro);
-  const description = pick(lang, item.description_ru, item.description_ro);
+  const name = pick(lang, item.name_ru, item.name_ro, item.name_en);
+  const description = pick(lang, item.description_ru, item.description_ro, item.description_en);
 
   return (
     <li
@@ -88,7 +95,10 @@ function ItemRow({ item, lang }: { item: MenuItem; lang: Lang }) {
           <ul className="mt-2 flex flex-wrap gap-x-5 gap-y-1">
             {item.variants.map((v) => (
               <li key={v.id} className="text-sm">
-                <span className="text-muted-foreground">{pick(lang, v.label_ru, v.label_ro)}</span>{" "}
+                <span className="text-muted-foreground">
+                  {pick(lang, v.label_ru, v.label_ro, v.label_en)}
+                </span>
+                <span className="mx-1.5 text-muted-foreground/60">—</span>
                 <span className="font-semibold text-primary">{formatPrice(v.price, lang)}</span>
               </li>
             ))}
@@ -132,7 +142,7 @@ function CategorySection({
       <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-4 sm:px-5 sm:py-5 [&::-webkit-details-marker]:hidden">
         <div className="flex items-center gap-3 sm:gap-4">
           <h2 className="text-display min-w-0 text-2xl text-primary sm:text-4xl">
-            {pick(lang, category.name_ru, category.name_ro)}
+            {pick(lang, category.name_ru, category.name_ro, category.name_en)}
           </h2>
           <span className="rule-gold h-px w-12 sm:w-20" />
         </div>
@@ -165,7 +175,7 @@ function CategorySection({
           >
             <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-3 py-3 [&::-webkit-details-marker]:hidden">
               <span className="min-w-0 truncate text-sm font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-                {pick(lang, g.sub.name_ru, g.sub.name_ro)}
+                {pick(lang, g.sub.name_ru, g.sub.name_ro, g.sub.name_en)}
               </span>
               <span className="flex shrink-0 items-center gap-2 text-xs text-muted-foreground">
                 {g.items.length}
@@ -237,7 +247,7 @@ function MenuPage() {
     fontFamily: `"${settings.font_body}", ui-sans-serif, system-ui, sans-serif`,
   } as React.CSSProperties;
 
-  const footerText = pick(lang, settings.footer_ru, settings.footer_ro);
+  const footerText = pick(lang, settings.footer_ru, settings.footer_ro, settings.footer_en);
 
   return (
     <main className="min-h-screen bg-background" style={fontVars}>
@@ -256,18 +266,18 @@ function MenuPage() {
         ) : null}
         <div className="mx-auto flex max-w-3xl flex-col items-center px-4 py-14 text-center sm:px-5 sm:py-28">
           <span className="text-[10px] uppercase tracking-[0.35em] text-primary sm:text-xs sm:tracking-[0.45em]">
-            {pick(lang, settings.kicker_ru, settings.kicker_ro)}
+            {pick(lang, settings.kicker_ru, settings.kicker_ro, settings.kicker_en)}
           </span>
           <h1 className="text-display mt-3 text-4xl leading-[1.05] text-foreground min-[420px]:text-5xl sm:text-8xl">
             {settings.brand_title}
           </h1>
           <p className="mt-3 text-xs text-muted-foreground sm:text-sm">
-            {pick(lang, settings.tagline_ru, settings.tagline_ro) || t("tagline")}
+            {pick(lang, settings.tagline_ru, settings.tagline_ro, settings.tagline_en) || t("tagline")}
           </p>
 
           <div className="mt-7 flex flex-wrap items-center justify-center gap-2">
             <div className="flex overflow-hidden rounded-md border border-border">
-              {(["ru", "ro"] as const).map((l) => (
+              {(["ru", "ro", "en"] as const).map((l) => (
                 <button
                   key={l}
                   onClick={() => setLang(l)}
@@ -277,7 +287,7 @@ function MenuPage() {
                       : "bg-transparent text-muted-foreground hover:bg-accent"
                   }`}
                 >
-                  {l === "ru" ? "Рус" : "Rom"}
+                  {l === "ru" ? "Рус" : l === "ro" ? "Rom" : "Eng"}
                 </button>
               ))}
             </div>
@@ -301,7 +311,7 @@ function MenuPage() {
               }}
               className="rounded-full border border-border px-2.5 py-1 text-[11px] font-medium leading-tight text-muted-foreground transition-colors hover:border-primary hover:text-primary sm:px-3 sm:py-1.5 sm:text-xs"
             >
-              {pick(lang, c.name_ru, c.name_ro)}
+              {pick(lang, c.name_ru, c.name_ro, c.name_en)}
             </a>
           ))}
         </div>
