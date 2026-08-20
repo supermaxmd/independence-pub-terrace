@@ -40,6 +40,7 @@ type Category = {
   slug: string;
   name_ru: string;
   name_ro: string;
+  name_en: string;
   sort_order: number;
   is_visible: boolean;
 };
@@ -48,6 +49,7 @@ type Subcategory = {
   category_id: string;
   name_ru: string;
   name_ro: string;
+  name_en: string;
   sort_order: number;
   is_visible: boolean;
 };
@@ -56,6 +58,7 @@ type Variant = {
   item_id?: string;
   label_ru: string;
   label_ro: string;
+  label_en: string;
   price: number;
   sort_order: number;
 };
@@ -65,8 +68,10 @@ type Item = {
   subcategory_id: string | null;
   name_ru: string;
   name_ro: string;
+  name_en: string;
   description_ru: string | null;
   description_ro: string | null;
+  description_en: string | null;
   image_url: string | null;
   sort_order: number;
   is_available: boolean;
@@ -288,6 +293,7 @@ function AdminPage() {
                 setEditingCategory({
                   name_ru: "",
                   name_ro: "",
+                  name_en: "",
                   sort_order: (categories.at(-1)?.sort_order ?? 0) + 10,
                   is_visible: true,
                 })
@@ -338,6 +344,7 @@ function AdminPage() {
                     category_id: currentCategoryId!,
                     name_ru: "",
                     name_ro: "",
+                    name_en: "",
                     sort_order: (currentSubs.at(-1)?.sort_order ?? 0) + 10,
                     is_visible: true,
                   })
@@ -355,8 +362,10 @@ function AdminPage() {
                     subcategory_id: null,
                     name_ru: "",
                     name_ro: "",
+                    name_en: "",
                     description_ru: "",
                     description_ro: "",
+                    description_en: "",
                     image_url: null,
                     sort_order: (currentItems.at(-1)?.sort_order ?? 0) + 10,
                     is_available: true,
@@ -510,6 +519,7 @@ function CategoryDialog({
     const payload = {
       name_ru: form.name_ru.trim(),
       name_ro: form.name_ro.trim(),
+      name_en: form.name_en?.trim() || form.name_ru.trim(),
       sort_order: Number(form.sort_order) || 0,
       is_visible: form.is_visible ?? true,
       slug:
@@ -550,6 +560,13 @@ function CategoryDialog({
               <Input
                 value={form.name_ro ?? ""}
                 onChange={(e) => setForm({ ...form, name_ro: e.target.value })}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Name (EN)</Label>
+              <Input
+                value={form.name_en ?? ""}
+                onChange={(e) => setForm({ ...form, name_en: e.target.value })}
               />
             </div>
           </div>
@@ -611,6 +628,7 @@ function SubDialog({
       category_id: form.category_id!,
       name_ru: form.name_ru.trim(),
       name_ro: form.name_ro.trim(),
+      name_en: form.name_en?.trim() || form.name_ru.trim(),
       sort_order: Number(form.sort_order) || 0,
       is_visible: form.is_visible ?? true,
     };
@@ -650,6 +668,13 @@ function SubDialog({
             />
           </div>
           <div className="space-y-2">
+            <Label>Name (EN)</Label>
+            <Input
+              value={form.name_en ?? ""}
+              onChange={(e) => setForm({ ...form, name_en: e.target.value })}
+            />
+          </div>
+          <div className="space-y-2">
             <Label>Порядок</Label>
             <Input
               type="number"
@@ -685,7 +710,7 @@ function ItemDialog({
   const [rows, setRows] = useState<Variant[]>(
     variants.length > 0
       ? variants
-      : [{ label_ru: "", label_ro: "", price: 0, sort_order: 10 }],
+      : [{ label_ru: "", label_ro: "", label_en: "", price: 0, sort_order: 10 }],
   );
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -725,8 +750,10 @@ function ItemDialog({
       subcategory_id: form.subcategory_id || null,
       name_ru: form.name_ru.trim(),
       name_ro: form.name_ro.trim(),
+      name_en: form.name_en?.trim() || form.name_ru.trim(),
       description_ru: form.description_ru?.trim() || null,
       description_ro: form.description_ro?.trim() || null,
+      description_en: form.description_en?.trim() || null,
       image_url: form.image_url || null,
       sort_order: Number(form.sort_order) || 0,
       is_available: form.is_available ?? true,
@@ -759,6 +786,7 @@ function ItemDialog({
         item_id: itemId!,
         label_ru: row.label_ru.trim(),
         label_ro: row.label_ro.trim(),
+        label_en: (row.label_en ?? "").trim(),
         price: Number(row.price) || 0,
         sort_order: (index + 1) * 10,
       };
@@ -852,6 +880,14 @@ function ItemDialog({
               />
             </div>
             <div className="space-y-2">
+              <Label>Name (EN)</Label>
+              <Input
+                value={form.name_en ?? ""}
+                onChange={(e) => setForm({ ...form, name_en: e.target.value })}
+                maxLength={120}
+              />
+            </div>
+            <div className="space-y-2">
               <Label>Описание (RU)</Label>
               <Textarea
                 rows={3}
@@ -866,6 +902,15 @@ function ItemDialog({
                 rows={3}
                 value={form.description_ro ?? ""}
                 onChange={(e) => setForm({ ...form, description_ro: e.target.value })}
+                maxLength={400}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Description (EN)</Label>
+              <Textarea
+                rows={3}
+                value={form.description_en ?? ""}
+                onChange={(e) => setForm({ ...form, description_en: e.target.value })}
                 maxLength={400}
               />
             </div>
@@ -921,7 +966,13 @@ function ItemDialog({
                 onClick={() =>
                   setRows([
                     ...rows,
-                    { label_ru: "", label_ro: "", price: 0, sort_order: (rows.length + 1) * 10 },
+                    {
+                      label_ru: "",
+                      label_ro: "",
+                      label_en: "",
+                      price: 0,
+                      sort_order: (rows.length + 1) * 10,
+                    },
                   ])
                 }
               >
@@ -950,6 +1001,15 @@ function ItemDialog({
                     onChange={(e) => {
                       const next = [...rows];
                       next[index] = { ...row, label_ro: e.target.value };
+                      setRows(next);
+                    }}
+                  />
+                  <Input
+                    placeholder="0.5 l (EN)"
+                    value={row.label_en ?? ""}
+                    onChange={(e) => {
+                      const next = [...rows];
+                      next[index] = { ...row, label_en: e.target.value };
                       setRows(next);
                     }}
                   />
