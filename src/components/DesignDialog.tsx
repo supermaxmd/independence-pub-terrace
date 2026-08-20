@@ -100,6 +100,10 @@ export function DesignDialog({
                 <Input value={form.kicker_ro} onChange={(e) => set("kicker_ro", e.target.value)} />
               </div>
               <div className="space-y-2">
+                <Label>Text above the title (EN)</Label>
+                <Input value={form.kicker_en} onChange={(e) => set("kicker_en", e.target.value)} />
+              </div>
+              <div className="space-y-2">
                 <Label>Подпись под названием (RU)</Label>
                 <Input value={form.tagline_ru} onChange={(e) => set("tagline_ru", e.target.value)} />
               </div>
@@ -108,12 +112,20 @@ export function DesignDialog({
                 <Input value={form.tagline_ro} onChange={(e) => set("tagline_ro", e.target.value)} />
               </div>
               <div className="space-y-2">
+                <Label>Subtitle (EN)</Label>
+                <Input value={form.tagline_en} onChange={(e) => set("tagline_en", e.target.value)} />
+              </div>
+              <div className="space-y-2">
                 <Label>Текст в подвале (RU)</Label>
                 <Input value={form.footer_ru} onChange={(e) => set("footer_ru", e.target.value)} />
               </div>
               <div className="space-y-2">
                 <Label>Text în subsol (RO)</Label>
                 <Input value={form.footer_ro} onChange={(e) => set("footer_ro", e.target.value)} />
+              </div>
+              <div className="space-y-2">
+                <Label>Footer text (EN)</Label>
+                <Input value={form.footer_en} onChange={(e) => set("footer_en", e.target.value)} />
               </div>
             </div>
 

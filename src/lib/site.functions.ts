@@ -6,10 +6,13 @@ export type SiteSettings = {
   brand_title: string;
   kicker_ru: string;
   kicker_ro: string;
+  kicker_en: string;
   tagline_ru: string;
   tagline_ro: string;
+  tagline_en: string;
   footer_ru: string;
   footer_ro: string;
+  footer_en: string;
   font_display: string;
   font_body: string;
   show_hero_image: boolean;
@@ -21,10 +24,13 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   brand_title: "Independence Pub",
   kicker_ru: "Chișinău",
   kicker_ro: "Chișinău",
+  kicker_en: "Chișinău",
   tagline_ru: "Паб · кухня · разливное пиво",
   tagline_ro: "Pub · bucătărie · bere draft",
+  tagline_en: "Pub · kitchen · draft beer",
   footer_ru: "",
   footer_ro: "",
+  footer_en: "",
   font_display: "Bebas Neue",
   font_body: "Manrope",
   show_hero_image: true,

@@ -7,6 +7,7 @@ export type MenuVariant = {
   item_id: string;
   label_ru: string;
   label_ro: string;
+  label_en: string;
   price: number;
   sort_order: number;
 };
@@ -17,8 +18,10 @@ export type MenuItem = {
   subcategory_id: string | null;
   name_ru: string;
   name_ro: string;
+  name_en: string;
   description_ru: string | null;
   description_ro: string | null;
+  description_en: string | null;
   image_url: string | null;
   sort_order: number;
   is_available: boolean;
@@ -30,6 +33,7 @@ export type MenuSubcategory = {
   category_id: string;
   name_ru: string;
   name_ro: string;
+  name_en: string;
   sort_order: number;
 };
 
@@ -38,6 +42,7 @@ export type MenuCategory = {
   slug: string;
   name_ru: string;
   name_ro: string;
+  name_en: string;
   sort_order: number;
   subcategories: MenuSubcategory[];
   items: MenuItem[];
@@ -63,23 +68,23 @@ export const getMenu = createServerFn({ method: "GET" }).handler(async (): Promi
   const [cats, subs, items, variants] = await Promise.all([
     supabase
       .from("categories")
-      .select("id, slug, name_ru, name_ro, sort_order")
+      .select("id, slug, name_ru, name_ro, name_en, sort_order")
       .eq("is_visible", true)
       .order("sort_order"),
     supabase
       .from("subcategories")
-      .select("id, category_id, name_ru, name_ro, sort_order")
+      .select("id, category_id, name_ru, name_ro, name_en, sort_order")
       .eq("is_visible", true)
       .order("sort_order"),
     supabase
       .from("menu_items")
       .select(
-        "id, category_id, subcategory_id, name_ru, name_ro, description_ru, description_ro, image_url, sort_order, is_available",
+        "id, category_id, subcategory_id, name_ru, name_ro, name_en, description_ru, description_ro, description_en, image_url, sort_order, is_available",
       )
       .order("sort_order"),
     supabase
       .from("item_variants")
-      .select("id, item_id, label_ru, label_ro, price, sort_order")
+      .select("id, item_id, label_ru, label_ro, label_en, price, sort_order")
       .order("sort_order"),
   ]);
 
