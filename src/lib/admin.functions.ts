@@ -72,6 +72,45 @@ export const listUsers = createServerFn({ method: "GET" })
     }));
   });
 
+/** Creates a new account. Admins only. */
+export const createUser = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { email: string; password: string; isAdmin: boolean }) => {
+    if (
+      !input ||
+      typeof input.email !== "string" ||
+      typeof input.password !== "string" ||
+      typeof input.isAdmin !== "boolean"
+    ) {
+      throw new Error("Invalid input");
+    }
+    const email = input.email.trim().toLowerCase();
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) throw new Error("Некорректный email");
+    if (input.password.length < 8) throw new Error("Пароль должен быть не короче 8 символов");
+    return { email, password: input.password, isAdmin: input.isAdmin };
+  })
+  .handler(async ({ data, context }): Promise<{ ok: true }> => {
+    const { assertAdmin } = await import("@/lib/admin.server");
+    await assertAdmin(context.supabase, context.userId);
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: created, error } = await supabaseAdmin.auth.admin.createUser({
+      email: data.email,
+      password: data.password,
+      email_confirm: true,
+    });
+    if (error || !created.user) throw new Error(error?.message ?? "Не удалось создать пользователя");
+
+    if (data.isAdmin) {
+      const { error: roleError } = await supabaseAdmin
+        .from("user_roles")
+        .upsert({ user_id: created.user.id, role: "admin" }, { onConflict: "user_id,role" });
+      if (roleError) throw new Error("Пользователь создан, но роль не назначена");
+    }
+
+    return { ok: true };
+  });
+
 /** Grants or revokes the admin role for a user. Admins only. */
 export const setUserAdmin = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
