@@ -43,6 +43,8 @@ type Category = {
   name_en: string;
   sort_order: number;
   is_visible: boolean;
+  enable_image_zoom: boolean;
+  show_food_disclaimer: boolean;
 };
 type Subcategory = {
   id: string;
@@ -296,6 +298,8 @@ function AdminPage() {
                   name_en: "",
                   sort_order: (categories.at(-1)?.sort_order ?? 0) + 10,
                   is_visible: true,
+                  enable_image_zoom: false,
+                  show_food_disclaimer: false,
                 })
               }
             >
@@ -522,6 +526,8 @@ function CategoryDialog({
       name_en: form.name_en?.trim() || form.name_ru.trim(),
       sort_order: Number(form.sort_order) || 0,
       is_visible: form.is_visible ?? true,
+      enable_image_zoom: form.enable_image_zoom ?? false,
+      show_food_disclaimer: form.show_food_disclaimer ?? false,
       slug:
         form.slug ||
         `cat-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`,
@@ -585,6 +591,22 @@ function CategoryDialog({
                 onCheckedChange={(v) => setForm({ ...form, is_visible: v })}
               />
               <Label>Показывать на сайте</Label>
+            </div>
+          </div>
+          <div className="space-y-3 rounded-md border border-border/60 p-3">
+            <div className="flex items-center gap-2">
+              <Switch
+                checked={form.enable_image_zoom ?? false}
+                onCheckedChange={(v) => setForm({ ...form, enable_image_zoom: v })}
+              />
+              <Label>Увеличение фото по клику</Label>
+            </div>
+            <div className="flex items-center gap-2">
+              <Switch
+                checked={form.show_food_disclaimer ?? false}
+                onCheckedChange={(v) => setForm({ ...form, show_food_disclaimer: v })}
+              />
+              <Label>Примечание «фото могут отличаться от подачи» (для блюд)</Label>
             </div>
           </div>
         </div>

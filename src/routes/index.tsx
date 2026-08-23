@@ -7,6 +7,7 @@ import { getMenu, type MenuCategory, type MenuItem } from "@/lib/menu.functions"
 import { getSiteSettings, type SiteSettings } from "@/lib/site.functions";
 import { useLang, pick, formatPrice, type Lang } from "@/lib/i18n";
 import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import heroImage from "@/assets/pub-hero.jpg";
 
 export const Route = createFileRoute("/")({
@@ -58,7 +59,23 @@ function matches(item: MenuItem, q: string) {
   return hay.includes(q.toLowerCase());
 }
 
-function ItemRow({ item, lang }: { item: MenuItem; lang: Lang }) {
+const DISCLAIMER: Record<Lang, string> = {
+  ru: "Изображения блюд могут отличаться от реальной подачи и приведены в ознакомительных целях.",
+  ro: "Imaginile preparatelor pot diferi de prezentarea reală și sunt afișate cu titlu informativ.",
+  en: "Dish images may differ from the actual serving and are shown for illustrative purposes only.",
+};
+
+function ItemRow({
+  item,
+  lang,
+  zoomable,
+  onZoom,
+}: {
+  item: MenuItem;
+  lang: Lang;
+  zoomable: boolean;
+  onZoom: (item: MenuItem) => void;
+}) {
   const name = pick(lang, item.name_ru, item.name_ro, item.name_en);
   const description = pick(lang, item.description_ru, item.description_ro, item.description_en);
 
@@ -69,14 +86,32 @@ function ItemRow({ item, lang }: { item: MenuItem; lang: Lang }) {
       }`}
     >
       {item.image_url ? (
-        <img
-          src={item.image_url}
-          alt={name}
-          loading="lazy"
-          width={88}
-          height={88}
-          className="h-16 w-16 shrink-0 rounded-md object-contain sm:h-[88px] sm:w-[88px]"
-        />
+        zoomable ? (
+          <button
+            type="button"
+            onClick={() => onZoom(item)}
+            aria-label={name}
+            className="shrink-0 cursor-zoom-in"
+          >
+            <img
+              src={item.image_url}
+              alt={name}
+              loading="lazy"
+              width={88}
+              height={88}
+              className="h-16 w-16 object-contain sm:h-[88px] sm:w-[88px]"
+            />
+          </button>
+        ) : (
+          <img
+            src={item.image_url}
+            alt={name}
+            loading="lazy"
+            width={88}
+            height={88}
+            className="h-16 w-16 shrink-0 rounded-md object-contain sm:h-[88px] sm:w-[88px]"
+          />
+        )
       ) : null}
       <div className="min-w-0 flex-1">
         <div className="flex items-baseline justify-between gap-3">
@@ -115,12 +150,14 @@ function CategorySection({
   query,
   isOpen,
   onToggle,
+  onZoom,
 }: {
   category: MenuCategory;
   lang: Lang;
   query: string;
   isOpen: boolean;
   onToggle: (slug: string, open: boolean) => void;
+  onZoom: (item: MenuItem) => void;
 }) {
   const items = category.items.filter((i) => matches(i, query));
   if (query && items.length === 0) return null;
@@ -162,7 +199,13 @@ function CategorySection({
         {ungrouped.length > 0 ? (
           <ul className="mt-2">
             {ungrouped.map((i) => (
-              <ItemRow key={i.id} item={i} lang={lang} />
+              <ItemRow
+                key={i.id}
+                item={i}
+                lang={lang}
+                zoomable={category.enable_image_zoom}
+                onZoom={onZoom}
+              />
             ))}
           </ul>
         ) : null}
@@ -184,11 +227,23 @@ function CategorySection({
             </summary>
             <ul className="px-3 pb-2">
               {g.items.map((i) => (
-                <ItemRow key={i.id} item={i} lang={lang} />
+                <ItemRow
+                  key={i.id}
+                  item={i}
+                  lang={lang}
+                  zoomable={category.enable_image_zoom}
+                  onZoom={onZoom}
+                />
               ))}
             </ul>
           </details>
         ))}
+
+        {category.show_food_disclaimer ? (
+          <p className="mt-4 text-xs italic leading-snug text-muted-foreground/80">
+            {DISCLAIMER[lang]}
+          </p>
+        ) : null}
       </div>
     </details>
   );
@@ -203,6 +258,10 @@ function MenuPage() {
   const { lang, setLang, t } = useLang();
   const [query, setQuery] = useState("");
   const [openCategories, setOpenCategories] = useState<Set<string>>(new Set());
+  const [zoomItem, setZoomItem] = useState<{ item: MenuItem; disclaimer: boolean } | null>(null);
+
+  const openZoom = (category: MenuCategory) => (item: MenuItem) =>
+    setZoomItem({ item, disclaimer: category.show_food_disclaimer });
 
   const visible = useMemo(
     () => categories.filter((c) => !query || c.items.some((i) => matches(i, query))),
@@ -341,10 +400,56 @@ function MenuPage() {
               query={query}
               isOpen={openCategories.has(c.slug)}
               onToggle={handleToggle}
+              onZoom={openZoom(c)}
             />
           ))
         )}
       </div>
+
+      <Dialog open={!!zoomItem} onOpenChange={(o) => !o && setZoomItem(null)}>
+        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg" style={fontVars}>
+          {zoomItem ? (
+            <div className="space-y-4">
+              <img
+                src={zoomItem.item.image_url ?? ""}
+                alt={pick(lang, zoomItem.item.name_ru, zoomItem.item.name_ro, zoomItem.item.name_en)}
+                className="mx-auto max-h-[55vh] w-full object-contain"
+              />
+              <DialogTitle className="text-display text-2xl text-foreground">
+                {pick(lang, zoomItem.item.name_ru, zoomItem.item.name_ro, zoomItem.item.name_en)}
+              </DialogTitle>
+              <DialogDescription className="text-sm leading-snug text-muted-foreground">
+                {pick(
+                  lang,
+                  zoomItem.item.description_ru,
+                  zoomItem.item.description_ro,
+                  zoomItem.item.description_en,
+                )}
+              </DialogDescription>
+              {zoomItem.item.variants.length > 0 ? (
+                <ul className="flex flex-wrap gap-x-5 gap-y-1">
+                  {zoomItem.item.variants.map((v) => (
+                    <li key={v.id} className="text-sm">
+                      <span className="text-muted-foreground">
+                        {pick(lang, v.label_ru, v.label_ro, v.label_en)}
+                      </span>
+                      {pick(lang, v.label_ru, v.label_ro, v.label_en) ? (
+                        <span className="mx-1.5 text-muted-foreground/60">—</span>
+                      ) : null}
+                      <span className="font-semibold text-primary">{formatPrice(v.price, lang)}</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+              {zoomItem.disclaimer ? (
+                <p className="text-xs italic leading-snug text-muted-foreground/80">
+                  {DISCLAIMER[lang]}
+                </p>
+              ) : null}
+            </div>
+          ) : null}
+        </DialogContent>
+      </Dialog>
 
       <footer className="mt-10 border-t border-border py-8">
         <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-2 px-4 text-xs text-muted-foreground sm:px-5">

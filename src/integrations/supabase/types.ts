@@ -17,33 +17,39 @@ export type Database = {
       categories: {
         Row: {
           created_at: string
+          enable_image_zoom: boolean
           id: string
           is_visible: boolean
           name_en: string
           name_ro: string
           name_ru: string
+          show_food_disclaimer: boolean
           slug: string
           sort_order: number
           updated_at: string
         }
         Insert: {
           created_at?: string
+          enable_image_zoom?: boolean
           id?: string
           is_visible?: boolean
           name_en?: string
           name_ro: string
           name_ru: string
+          show_food_disclaimer?: boolean
           slug: string
           sort_order?: number
           updated_at?: string
         }
         Update: {
           created_at?: string
+          enable_image_zoom?: boolean
           id?: string
           is_visible?: boolean
           name_en?: string
           name_ro?: string
           name_ru?: string
+          show_food_disclaimer?: boolean
           slug?: string
           sort_order?: number
           updated_at?: string

@@ -44,6 +44,8 @@ export type MenuCategory = {
   name_ro: string;
   name_en: string;
   sort_order: number;
+  enable_image_zoom: boolean;
+  show_food_disclaimer: boolean;
   subcategories: MenuSubcategory[];
   items: MenuItem[];
 };
@@ -68,7 +70,7 @@ export const getMenu = createServerFn({ method: "GET" }).handler(async (): Promi
   const [cats, subs, items, variants] = await Promise.all([
     supabase
       .from("categories")
-      .select("id, slug, name_ru, name_ro, name_en, sort_order")
+      .select("id, slug, name_ru, name_ro, name_en, sort_order, enable_image_zoom, show_food_disclaimer")
       .eq("is_visible", true)
       .order("sort_order"),
     supabase
