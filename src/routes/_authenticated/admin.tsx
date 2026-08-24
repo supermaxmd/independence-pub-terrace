@@ -661,7 +661,22 @@ function CategoryDialog({
               />
               <Label>Примечание «фото могут отличаться от подачи» (для блюд)</Label>
             </div>
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                disabled={!sampleItem}
+                onClick={openPreview}
+              >
+                Предпросмотр окна увеличения
+              </Button>
+              {!sampleItem ? (
+                <span className="text-xs text-muted-foreground">Нет позиций в разделе</span>
+              ) : null}
+            </div>
           </div>
+
         </div>
         <DialogFooter className="gap-2 sm:justify-between">
           {onDelete ? (
