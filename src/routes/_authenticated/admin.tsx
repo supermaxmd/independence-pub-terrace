@@ -507,17 +507,24 @@ function AdminPage() {
 
 function CategoryDialog({
   value,
+  sampleItem,
+  sampleVariants,
   onClose,
   onSaved,
   onDelete,
 }: {
   value: Partial<Category>;
+  sampleItem?: Item | null;
+  sampleVariants?: Variant[];
   onClose: () => void;
   onSaved: () => void;
   onDelete?: (() => void) | undefined;
 }) {
   const [form, setForm] = useState(value);
   const [saving, setSaving] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
 
   const save = async () => {
     if (!form.name_ru?.trim() || !form.name_ro?.trim()) {
