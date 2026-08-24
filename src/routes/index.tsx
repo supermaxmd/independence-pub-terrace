@@ -59,11 +59,8 @@ function matches(item: MenuItem, q: string) {
   return hay.includes(q.toLowerCase());
 }
 
-const DISCLAIMER: Record<Lang, string> = {
-  ru: "Изображения блюд могут отличаться от реальной подачи и приведены в ознакомительных целях.",
-  ro: "Imaginile preparatelor pot diferi de prezentarea reală și sunt afișate cu titlu informativ.",
-  en: "Dish images may differ from the actual serving and are shown for illustrative purposes only.",
-};
+const DISCLAIMER = ZOOM_DISCLAIMER;
+
 
 function ItemRow({
   item,
