@@ -7,7 +7,7 @@ import { getMenu, type MenuCategory, type MenuItem } from "@/lib/menu.functions"
 import { getSiteSettings, type SiteSettings } from "@/lib/site.functions";
 import { useLang, pick, formatPrice, type Lang } from "@/lib/i18n";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { ItemZoomDialog, ZOOM_DISCLAIMER } from "@/components/ItemZoomDialog";
 import heroImage from "@/assets/pub-hero.jpg";
 
 export const Route = createFileRoute("/")({
@@ -59,11 +59,8 @@ function matches(item: MenuItem, q: string) {
   return hay.includes(q.toLowerCase());
 }
 
-const DISCLAIMER: Record<Lang, string> = {
-  ru: "Изображения блюд могут отличаться от реальной подачи и приведены в ознакомительных целях.",
-  ro: "Imaginile preparatelor pot diferi de prezentarea reală și sunt afișate cu titlu informativ.",
-  en: "Dish images may differ from the actual serving and are shown for illustrative purposes only.",
-};
+const DISCLAIMER = ZOOM_DISCLAIMER;
+
 
 function ItemRow({
   item,
@@ -406,50 +403,15 @@ function MenuPage() {
         )}
       </div>
 
-      <Dialog open={!!zoomItem} onOpenChange={(o) => !o && setZoomItem(null)}>
-        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg" style={fontVars}>
-          {zoomItem ? (
-            <div className="space-y-4">
-              <img
-                src={zoomItem.item.image_url ?? ""}
-                alt={pick(lang, zoomItem.item.name_ru, zoomItem.item.name_ro, zoomItem.item.name_en)}
-                className="mx-auto max-h-[55vh] w-full object-contain"
-              />
-              <DialogTitle className="text-display text-2xl text-foreground">
-                {pick(lang, zoomItem.item.name_ru, zoomItem.item.name_ro, zoomItem.item.name_en)}
-              </DialogTitle>
-              <DialogDescription className="text-sm leading-snug text-muted-foreground">
-                {pick(
-                  lang,
-                  zoomItem.item.description_ru,
-                  zoomItem.item.description_ro,
-                  zoomItem.item.description_en,
-                )}
-              </DialogDescription>
-              {zoomItem.item.variants.length > 0 ? (
-                <ul className="flex flex-wrap gap-x-5 gap-y-1">
-                  {zoomItem.item.variants.map((v) => (
-                    <li key={v.id} className="text-sm">
-                      <span className="text-muted-foreground">
-                        {pick(lang, v.label_ru, v.label_ro, v.label_en)}
-                      </span>
-                      {pick(lang, v.label_ru, v.label_ro, v.label_en) ? (
-                        <span className="mx-1.5 text-muted-foreground/60">—</span>
-                      ) : null}
-                      <span className="font-semibold text-primary">{formatPrice(v.price, lang)}</span>
-                    </li>
-                  ))}
-                </ul>
-              ) : null}
-              {zoomItem.disclaimer ? (
-                <p className="text-xs italic leading-snug text-muted-foreground/80">
-                  {DISCLAIMER[lang]}
-                </p>
-              ) : null}
-            </div>
-          ) : null}
-        </DialogContent>
-      </Dialog>
+      <ItemZoomDialog
+        item={zoomItem?.item ?? null}
+        lang={lang}
+        disclaimer={!!zoomItem?.disclaimer}
+        open={!!zoomItem}
+        onOpenChange={(o) => !o && setZoomItem(null)}
+        style={fontVars}
+      />
+
 
       <footer className="mt-10 border-t border-border py-8">
         <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-2 px-4 text-xs text-muted-foreground sm:px-5">

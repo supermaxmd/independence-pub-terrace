@@ -470,6 +470,10 @@ function AdminPage() {
       {editingCategory && (
         <CategoryDialog
           value={editingCategory}
+          sampleItem={
+            (itemsQuery.data ?? []).find((i) => i.category_id === editingCategory.id) ?? null
+          }
+          sampleVariants={(variantsQuery.data ?? []) as Variant[]}
           onClose={() => setEditingCategory(null)}
           onSaved={invalidate}
           onDelete={
@@ -482,6 +486,7 @@ function AdminPage() {
           }
         />
       )}
+
 
       {editingSub && (
         <SubDialog value={editingSub} onClose={() => setEditingSub(null)} onSaved={invalidate} />
@@ -502,17 +507,65 @@ function AdminPage() {
 
 function CategoryDialog({
   value,
+  sampleItem,
+  sampleVariants,
   onClose,
   onSaved,
   onDelete,
 }: {
   value: Partial<Category>;
+  sampleItem?: Item | null;
+  sampleVariants?: Variant[];
   onClose: () => void;
   onSaved: () => void;
   onDelete?: (() => void) | undefined;
 }) {
   const [form, setForm] = useState(value);
   const [saving, setSaving] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+  const openPreview = async () => {
+    const raw = sampleItem?.image_url ?? null;
+    if (raw && !raw.startsWith("http")) {
+      const { data } = await supabase.storage.from("menu").createSignedUrl(raw, 3600);
+      setPreviewUrl(data?.signedUrl ?? null);
+    } else {
+      setPreviewUrl(raw);
+    }
+    setPreviewOpen(true);
+  };
+
+  const previewItem: MenuItem | null = sampleItem
+    ? {
+        id: sampleItem.id,
+        category_id: sampleItem.category_id,
+        subcategory_id: sampleItem.subcategory_id ?? null,
+        name_ru: sampleItem.name_ru,
+        name_ro: sampleItem.name_ro,
+        name_en: sampleItem.name_en ?? sampleItem.name_ru,
+        description_ru: sampleItem.description_ru ?? null,
+        description_ro: sampleItem.description_ro ?? null,
+        description_en: sampleItem.description_en ?? null,
+        image_url: previewUrl,
+        sort_order: sampleItem.sort_order ?? 0,
+        is_available: sampleItem.is_available ?? true,
+        variants: (sampleVariants ?? [])
+          .filter((v) => v.item_id === sampleItem.id)
+          .map((v) => ({
+            id: v.id!,
+            item_id: sampleItem.id,
+            label_ru: v.label_ru ?? "",
+            label_ro: v.label_ro ?? "",
+            label_en: v.label_en ?? "",
+            price: Number(v.price),
+            sort_order: v.sort_order ?? 0,
+          })),
+      }
+    : null;
+
+
+
 
   const save = async () => {
     if (!form.name_ru?.trim() || !form.name_ro?.trim()) {
@@ -608,7 +661,22 @@ function CategoryDialog({
               />
               <Label>Примечание «фото могут отличаться от подачи» (для блюд)</Label>
             </div>
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                disabled={!sampleItem}
+                onClick={openPreview}
+              >
+                Предпросмотр окна увеличения
+              </Button>
+              {!sampleItem ? (
+                <span className="text-xs text-muted-foreground">Нет позиций в разделе</span>
+              ) : null}
+            </div>
           </div>
+
         </div>
         <DialogFooter className="gap-2 sm:justify-between">
           {onDelete ? (
@@ -624,7 +692,15 @@ function CategoryDialog({
           </Button>
         </DialogFooter>
       </DialogContent>
+      <ItemZoomDialog
+        item={form.enable_image_zoom ? previewItem : previewItem}
+        lang="ru"
+        disclaimer={form.show_food_disclaimer ?? false}
+        open={previewOpen}
+        onOpenChange={setPreviewOpen}
+      />
     </Dialog>
+
   );
 }
 
