@@ -470,6 +470,10 @@ function AdminPage() {
       {editingCategory && (
         <CategoryDialog
           value={editingCategory}
+          sampleItem={
+            (itemsQuery.data ?? []).find((i) => i.category_id === editingCategory.id) ?? null
+          }
+          sampleVariants={(variantsQuery.data ?? []) as Variant[]}
           onClose={() => setEditingCategory(null)}
           onSaved={invalidate}
           onDelete={
@@ -482,6 +486,7 @@ function AdminPage() {
           }
         />
       )}
+
 
       {editingSub && (
         <SubDialog value={editingSub} onClose={() => setEditingSub(null)} onSaved={invalidate} />
