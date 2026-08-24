@@ -7,7 +7,7 @@ import { getMenu, type MenuCategory, type MenuItem } from "@/lib/menu.functions"
 import { getSiteSettings, type SiteSettings } from "@/lib/site.functions";
 import { useLang, pick, formatPrice, type Lang } from "@/lib/i18n";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { ItemZoomDialog, ZOOM_DISCLAIMER } from "@/components/ItemZoomDialog";
 import heroImage from "@/assets/pub-hero.jpg";
 
 export const Route = createFileRoute("/")({
