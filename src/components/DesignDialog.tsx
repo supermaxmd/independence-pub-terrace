@@ -229,6 +229,52 @@ export function DesignDialog({
             </div>
 
             <div className="space-y-2">
+              <Label>Картинка шапки сайта</Label>
+              <div className="overflow-hidden rounded-lg border border-border">
+                {heroPreview ? (
+                  <img
+                    src={heroPreview}
+                    alt="Шапка сайта"
+                    className="h-36 w-full object-cover"
+                  />
+                ) : (
+                  <div className="flex h-36 w-full items-center justify-center bg-muted text-xs text-muted-foreground">
+                    Используется картинка по умолчанию
+                  </div>
+                )}
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <Input
+                  type="file"
+                  accept="image/*"
+                  disabled={uploading}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) void uploadHero(file);
+                    e.target.value = "";
+                  }}
+                  className="max-w-xs"
+                />
+                {form.hero_image_url ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      set("hero_image_url", "");
+                      setHeroPreview(null);
+                    }}
+                  >
+                    Вернуть стандартную
+                  </Button>
+                ) : null}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {uploading ? "Загрузка…" : "JPG или PNG, до 8 МБ. Показывается, если включено фоновое фото."}
+              </p>
+            </div>
+
+
+            <div className="space-y-2">
               <Label>Адрес сайта для QR-кода</Label>
               <Input value={form.public_url} onChange={(e) => set("public_url", e.target.value)} />
               <p className="text-xs text-muted-foreground">
