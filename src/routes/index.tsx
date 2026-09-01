@@ -311,7 +311,7 @@ function MenuPage() {
         {settings.show_hero_image ? (
           <>
             <img
-              src={heroImage}
+              src={settings.hero_image_url || heroImage}
               alt={settings.brand_title}
               width={1920}
               height={1080}

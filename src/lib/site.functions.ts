@@ -18,6 +18,7 @@ export type SiteSettings = {
   show_hero_image: boolean;
   show_search: boolean;
   public_url: string;
+  hero_image_url: string;
 };
 
 export const DEFAULT_SETTINGS: SiteSettings = {
@@ -36,6 +37,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   show_hero_image: true,
   show_search: true,
   public_url: "https://independence-pub.lovable.app/",
+  hero_image_url: "",
 };
 
 export const FONT_OPTIONS = [
@@ -71,6 +73,15 @@ export const getSiteSettings = createServerFn({ method: "GET" }).handler(
 
     const { data } = await supabase.from("site_settings").select("*").eq("id", "default").maybeSingle();
     if (!data) return DEFAULT_SETTINGS;
-    return { ...DEFAULT_SETTINGS, ...(data as Partial<SiteSettings>) };
+    const merged = { ...DEFAULT_SETTINGS, ...(data as Partial<SiteSettings>) };
+
+    if (merged.hero_image_url && !merged.hero_image_url.startsWith("http")) {
+      const { data: signed } = await supabase.storage
+        .from("menu")
+        .createSignedUrl(merged.hero_image_url, 60 * 60 * 6);
+      merged.hero_image_url = signed?.signedUrl ?? "";
+    }
+
+    return merged;
   },
 );
