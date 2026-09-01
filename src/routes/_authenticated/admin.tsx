@@ -10,6 +10,8 @@ import { claimFirstAdmin, getIsAdmin } from "@/lib/admin.functions";
 import { QrPrintDialog } from "@/components/QrPrintDialog";
 import { DesignDialog } from "@/components/DesignDialog";
 import { UsersDialog } from "@/components/UsersDialog";
+import { ItemZoomDialog } from "@/components/ItemZoomDialog";
+import type { MenuItem } from "@/lib/menu.functions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
