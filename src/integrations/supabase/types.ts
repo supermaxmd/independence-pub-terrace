@@ -175,6 +175,7 @@ export type Database = {
           footer_en: string
           footer_ro: string
           footer_ru: string
+          hero_image_url: string
           id: string
           kicker_en: string
           kicker_ro: string
@@ -195,6 +196,7 @@ export type Database = {
           footer_en?: string
           footer_ro?: string
           footer_ru?: string
+          hero_image_url?: string
           id?: string
           kicker_en?: string
           kicker_ro?: string
@@ -215,6 +217,7 @@ export type Database = {
           footer_en?: string
           footer_ro?: string
           footer_ru?: string
+          hero_image_url?: string
           id?: string
           kicker_en?: string
           kicker_ro?: string

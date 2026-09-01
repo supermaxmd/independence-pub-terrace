@@ -33,6 +33,34 @@ export function DesignDialog({
   const [form, setForm] = useState<SiteSettings>(DEFAULT_SETTINGS);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [heroPreview, setHeroPreview] = useState<string | null>(null);
+
+  const resolvePreview = async (value: string) => {
+    if (!value) return setHeroPreview(null);
+    if (value.startsWith("http")) return setHeroPreview(value);
+    const { data } = await supabase.storage.from("menu").createSignedUrl(value, 3600);
+    setHeroPreview(data?.signedUrl ?? null);
+  };
+
+  const uploadHero = async (file: File) => {
+    if (file.size > 8 * 1024 * 1024) {
+      toast.error("Файл больше 8 МБ");
+      return;
+    }
+    setUploading(true);
+    const ext = file.name.split(".").pop()?.toLowerCase() ?? "jpg";
+    const path = `hero/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+    const { error } = await supabase.storage.from("menu").upload(path, file, { upsert: false });
+    setUploading(false);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    set("hero_image_url", path);
+    void resolvePreview(path);
+    toast.success("Картинка шапки загружена");
+  };
 
   useEffect(() => {
     if (!open) return;
@@ -45,7 +73,11 @@ export function DesignDialog({
       .maybeSingle()
       .then(({ data }) => {
         if (!active) return;
-        if (data) setForm({ ...DEFAULT_SETTINGS, ...(data as Partial<SiteSettings>) });
+        if (data) {
+          const merged = { ...DEFAULT_SETTINGS, ...(data as Partial<SiteSettings>) };
+          setForm(merged);
+          void resolvePreview(merged.hero_image_url);
+        }
         setLoading(false);
       });
     return () => {
@@ -195,6 +227,52 @@ export function DesignDialog({
                 <Label>Строка поиска</Label>
               </div>
             </div>
+
+            <div className="space-y-2">
+              <Label>Картинка шапки сайта</Label>
+              <div className="overflow-hidden rounded-lg border border-border">
+                {heroPreview ? (
+                  <img
+                    src={heroPreview}
+                    alt="Шапка сайта"
+                    className="h-36 w-full object-cover"
+                  />
+                ) : (
+                  <div className="flex h-36 w-full items-center justify-center bg-muted text-xs text-muted-foreground">
+                    Используется картинка по умолчанию
+                  </div>
+                )}
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <Input
+                  type="file"
+                  accept="image/*"
+                  disabled={uploading}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) void uploadHero(file);
+                    e.target.value = "";
+                  }}
+                  className="max-w-xs"
+                />
+                {form.hero_image_url ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      set("hero_image_url", "");
+                      setHeroPreview(null);
+                    }}
+                  >
+                    Вернуть стандартную
+                  </Button>
+                ) : null}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {uploading ? "Загрузка…" : "JPG или PNG, до 8 МБ. Показывается, если включено фоновое фото."}
+              </p>
+            </div>
+
 
             <div className="space-y-2">
               <Label>Адрес сайта для QR-кода</Label>
