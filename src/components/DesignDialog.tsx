@@ -73,7 +73,11 @@ export function DesignDialog({
       .maybeSingle()
       .then(({ data }) => {
         if (!active) return;
-        if (data) setForm({ ...DEFAULT_SETTINGS, ...(data as Partial<SiteSettings>) });
+        if (data) {
+          const merged = { ...DEFAULT_SETTINGS, ...(data as Partial<SiteSettings>) };
+          setForm(merged);
+          void resolvePreview(merged.hero_image_url);
+        }
         setLoading(false);
       });
     return () => {
