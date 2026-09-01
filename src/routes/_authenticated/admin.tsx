@@ -693,13 +693,14 @@ function CategoryDialog({
         </DialogFooter>
       </DialogContent>
       <ItemZoomDialog
-        item={form.enable_image_zoom ? previewItem : previewItem}
+        item={previewItem}
         lang="ru"
         disclaimer={form.show_food_disclaimer ?? false}
         open={previewOpen}
         onOpenChange={setPreviewOpen}
       />
     </Dialog>
+
 
   );
 }
