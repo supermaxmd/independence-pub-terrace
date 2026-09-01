@@ -33,6 +33,34 @@ export function DesignDialog({
   const [form, setForm] = useState<SiteSettings>(DEFAULT_SETTINGS);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [heroPreview, setHeroPreview] = useState<string | null>(null);
+
+  const resolvePreview = async (value: string) => {
+    if (!value) return setHeroPreview(null);
+    if (value.startsWith("http")) return setHeroPreview(value);
+    const { data } = await supabase.storage.from("menu").createSignedUrl(value, 3600);
+    setHeroPreview(data?.signedUrl ?? null);
+  };
+
+  const uploadHero = async (file: File) => {
+    if (file.size > 8 * 1024 * 1024) {
+      toast.error("Файл больше 8 МБ");
+      return;
+    }
+    setUploading(true);
+    const ext = file.name.split(".").pop()?.toLowerCase() ?? "jpg";
+    const path = `hero/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+    const { error } = await supabase.storage.from("menu").upload(path, file, { upsert: false });
+    setUploading(false);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    set("hero_image_url", path);
+    void resolvePreview(path);
+    toast.success("Картинка шапки загружена");
+  };
 
   useEffect(() => {
     if (!open) return;
